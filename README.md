@@ -1,3 +1,11 @@
+I forked this repo because I use it.
+
+### CHANGELOG
+
+- 8297fce9 Update ws to 7.4.6
+
+---
+
 **Development on droppy has ceased because I don't have enough time or motivation to properly support it and because of its outdated technology stack, it became exceedingly boring to work.**
 
 <p align="center">
