@@ -1,13 +1,5 @@
 "use strict";
 
-function promisify(fn) {
-  return function() {
-    return new Promise(resolve => {
-      fn(result => resolve(result));
-    });
-  };
-}
-
 const droppy = Object.create(null);
 
 /* {{ templates }} */
@@ -550,73 +542,6 @@ function initMainPage() {
     toggleButtons(view, view[0].dataset.type);
   });
 
-  // handle pasting text and images in directory view
-  window.addEventListener("paste", async e => {
-    const view = getActiveView();
-    if (view[0].dataset.type !== "directory") return;
-    if (e.clipboardData && e.clipboardData.items) { // modern browsers
-      const texts = [];
-      const images = [];
-
-      for (const item of e.clipboardData.items) {
-        if (item.kind === "file" || item.type.includes("image")) {
-          images.push(item.getAsFile());
-        }
-      }
-
-      // this API is weirdly implemented in Chrome. A pasted image consists of two items,
-      // if the text item is read first, the image item will not be available.
-      for (const item of e.clipboardData.items) {
-        if (item.kind === "string") {
-          const text = await promisify(item.getAsString.bind(item))();
-          texts.push(new Blob([text], {type: "text/plain"}));
-        }
-      }
-
-      // if a image is found, don't upload additional text blobs
-      if (images.length) {
-        images.forEach(image => uploadBlob(view, image));
-      } else {
-        texts.forEach((text) => uploadBlob(view, text));
-      }
-    } else if (e.clipboardData.types) { // Safari specific
-      if (e.clipboardData.types.includes("text/plain")) {
-        const blob = new Blob([e.clipboardData.getData("Text")], {type: "text/plain"});
-        uploadBlob(view, blob);
-        $(".ce").empty();
-        if (droppy.savedFocus) droppy.savedFocus.focus();
-      } else {
-        const start = performance.now();
-        (function findImages() {
-          const images = $(".ce img");
-          if (!images.length && performance.now() - start < 5000) {
-            return setTimeout(findImages, 25);
-          }
-          images.each(function() {
-            urlToPngBlob(this.src, (blob) => {
-              uploadBlob(view, blob);
-              $(".ce").empty();
-              if (droppy.savedFocus) droppy.savedFocus.focus();
-            });
-          });
-        })();
-      }
-    }
-  });
-
-  // Hacks for Safari to be able to paste
-  if (droppy.detects.safari) {
-    $("body").append('<div class="ce" contenteditable>');
-    window.addEventListener("keydown", (e) => {
-      if (e.metaKey && e.key === "v") {
-        if (e.target.nodeName.toLowerCase() !== "input") {
-          droppy.savedFocus = document.activeElement;
-          $(".ce")[0].focus();
-        }
-      }
-    });
-  }
-
   screenfull.on("change", () => {
     // unfocus the fullscreen button so the space key won't un-toggle fullscreen
     document.activeElement.blur();
@@ -630,18 +555,6 @@ function initMainPage() {
 // ============================================================================
 //  Upload functions
 // ============================================================================
-function uploadBlob(view, blob) {
-  const fd = new FormData();
-  let name = "pasted-";
-  if (blob.type.startsWith("image")) {
-    name += `image-${dateFilename()}.${imgExtFromMime(blob.type)}`;
-  } else {
-    name += `text-${dateFilename()}.txt`;
-  }
-  fd.append("files[]", blob, name);
-  upload(view, fd, [name]);
-}
-
 function upload(view, fd, files) {
   let rename = false;
   if (view[0].currentData && Object.keys(view[0].currentData).length) {
@@ -3152,52 +3065,7 @@ function normalize(str) {
   return String.prototype.normalize ? str.normalize() : str;
 }
 
-function pad(num) {
-  return num < 10 ? `0${num}` : `${num}`;
-}
-
-function dateFilename() {
-  const now = new Date();
-  const day = now.getDate();
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
-  const hrs = now.getHours();
-  const mins = now.getMinutes();
-  const secs = now.getSeconds();
-
-  return `${year}-${pad(month)}-${pad(day)}-${pad(hrs)}-${pad(mins)}-${pad(secs)}`;
-}
-
 function arr(arrLike) {
   if (!arrLike) return [];
   return [].slice.call(arrLike);
-}
-
-function urlToPngBlob(url, cb) {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.addEventListener("load", () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const binary = atob(canvas.toDataURL("image/png").split(",")[1]);
-    const len = binary.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-    cb(new Blob([bytes.buffer], {type: "image/png"}));
-  });
-  img.src = url;
-}
-
-function imgExtFromMime(mime) {
-  let ret;
-  Object.keys(droppy.imageTypes).some((ext) => {
-    if (mime === droppy.imageTypes[ext]) {
-      ret = ext;
-      return true;
-    }
-  });
-  return ret;
 }
