@@ -62,7 +62,7 @@ const log = module.exports = function(req, res, logLevel, ...elems) {
   });
 
   if (logfile) {
-    fs.write(logfile, `${stripAnsi(elems.join(" "))}\n`);
+    fs.writeSync(logfile, `${stripAnsi(elems.join(" "))}\n`);
   } else {
     console.info(...elems);
   }
