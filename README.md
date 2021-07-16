@@ -2,6 +2,8 @@ I forked this repo because I use it.
 
 ### CHANGELOG
 
+- [12.4.0](https://github.com/gurdiga/droppy/tree/v12.4.0) Fix logging
+- [12.3.0](https://github.com/gurdiga/droppy/tree/v12.3.0) Disable pasting in a directory listing
 - 8297fce9 Update ws to 7.4.6
 
 ---
