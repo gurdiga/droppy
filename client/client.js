@@ -1047,6 +1047,7 @@ function openDirectory(view, data, isSearch) {
 
     view.find(".delete-file").off("click").on("click", function() {
       if (droppy.socketWait) return;
+      if (!confirm('Are you sure?')) return;
       showSpinner(view);
       sendMessage(view[0].vId, "DELETE_FILE", $(this).parents(".data-row")[0].dataset.id);
     });
@@ -1518,6 +1519,7 @@ function initEntryMenu() {
   $("#entry-menu .delete").off("click").on("click", (event) => {
     event.stopPropagation();
     if (droppy.socketWait) return;
+    if (!confirm('Are you sure?')) return;
 
     const entry = $(`.data-row[data-id="${droppy.menuTargetId}"]`);
     const view = entry.parents(".view");
