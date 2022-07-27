@@ -2056,6 +2056,7 @@ function openDoc(view, entryId) {
       editor.clearHistory();
 
       view.find(".exit").off("click").on("click", function() {
+        if (!window.confirm("Close the file?")) return;
         closeDoc($(this).parents(".view"));
         editor = null;
       });
