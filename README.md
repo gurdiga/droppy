@@ -3,8 +3,10 @@ I forked this repo because I use it.
 After committing a change run:
 
 ```
+# When changing the client only:
 make build # to update dist/cache.json
 git commit dist/cache.json -m 'Update dist/cache.json'
+
 make ver-patch # or some such
 git push --tags
 git push
