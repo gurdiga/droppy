@@ -68,3 +68,6 @@ minor: test build ver-minor docker publish
 major: test build ver-major docker publish
 
 .PHONY: dev run lint test publish docker deps update jquery version-patch version-minor version-major patch minor major
+
+start:
+	node droppy start --dev
