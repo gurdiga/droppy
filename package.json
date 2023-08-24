@@ -57,7 +57,7 @@
     "mousetrap": "1.6.5",
     "pdfjs-dist": "2.4.456",
     "photoswipe": "4.1.3",
-    "postcss": "7.0.32",
+    "postcss": "^8.4.28",
     "screenfull": "5.0.2",
     "stylelint": "13.6.1",
     "stylelint-config-silverwind": "2.0.8",
