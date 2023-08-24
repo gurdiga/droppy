@@ -61,7 +61,7 @@
     "screenfull": "5.0.2",
     "stylelint": "13.6.1",
     "stylelint-config-silverwind": "2.0.8",
-    "svgstore": "3.0.0-2",
+    "svgstore": "^3.0.1",
     "terser": "5.2.1",
     "updates": "10.3.5",
     "uppie": "1.1.3",
