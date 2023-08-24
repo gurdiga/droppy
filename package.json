@@ -31,6 +31,7 @@
     "mime-types": "2.1.27",
     "minimist": "^1.2.8",
     "mv": "2.1.1",
+    "nth-check": "^2.1.1",
     "original-url": "1.2.3",
     "plyr": "3.6.2",
     "ps-node": "0.1.6",
