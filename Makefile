@@ -71,3 +71,8 @@ major: test build ver-major docker publish
 
 start:
 	node droppy start --dev
+
+edit:
+	code -n .
+
+e: edit
