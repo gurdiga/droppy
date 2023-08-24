@@ -62,7 +62,7 @@
     "stylelint": "13.6.1",
     "stylelint-config-silverwind": "2.0.8",
     "svgstore": "^3.0.1",
-    "terser": "5.2.1",
+    "terser": "^5.19.2",
     "updates": "10.3.5",
     "uppie": "1.1.3",
     "versions": "8.4.3",
