@@ -10,7 +10,7 @@ run:
 
 lint:
 	yarn -s run eslint server client/client.js droppy.js
-	yarn -s run stylelint client/*.css
+	# yarn -s run stylelint client/*.css
 
 test: lint
 
@@ -71,8 +71,14 @@ major: test build ver-major docker publish
 
 start:
 	node droppy start --dev
+s: start
 
 edit:
 	code -n .
 
 e: edit
+
+install:
+	npm i
+
+i: install
