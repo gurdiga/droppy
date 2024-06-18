@@ -42,7 +42,7 @@
     "untildify": "4.0.0",
     "valid-filename": "3.1.0",
     "which": "2.0.2",
-    "ws": "7.4.6",
+    "ws": "^8.17.1",
     "yazl": "2.5.1"
   },
   "devDependencies": {
