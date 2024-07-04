@@ -1156,7 +1156,7 @@ function handleUploadRequest(req, res) {
   };
   if (config.maxFileSize > 0) opts.limits.fileSize = config.maxFileSize;
 
-  const busboy = new Busboy(opts);
+  const busboy = Busboy(opts);
   const rootNames = new Set();
 
   busboy.on("error", err => {
@@ -1169,7 +1169,7 @@ function handleUploadRequest(req, res) {
     closeConnection(400);
   };
 
-  busboy.on("file", (_, file, filePath) => {
+  busboy.on("file", (_, file, {filename: filePath}) => {
     if (!utils.isPathSane(filePath) || !utils.isPathSane(dstDir)) return;
     numFiles++;
 
