@@ -1,6 +1,6 @@
 {
   "name": "droppy",
-  "version": "12.4.13",
+  "version": "12.4.14",
   "description": "Self-hosted file storage",
   "author": "silverwind <me@silverwind.io>",
   "repository": "silverwind/droppy",
@@ -37,7 +37,7 @@
     "ps-node": "0.1.6",
     "rfdc": "1.1.4",
     "rrdir": "8.1.1",
-    "send": "0.17.1",
+    "send": "^0.19.0",
     "strip-ansi": "6.0.0",
     "untildify": "4.0.0",
     "valid-filename": "3.1.0",
