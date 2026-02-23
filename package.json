@@ -1,6 +1,6 @@
 {
   "name": "droppy",
-  "version": "12.4.15",
+  "version": "12.4.16",
   "description": "Self-hosted file storage",
   "author": "silverwind <me@silverwind.io>",
   "repository": "silverwind/droppy",
@@ -87,5 +87,8 @@
     "self",
     "hosted"
   ],
-  "browserslist": "defaults"
+  "browserslist": "defaults",
+  "overrides": {
+    "minimatch": "^10.2.2"
+  }
 }
