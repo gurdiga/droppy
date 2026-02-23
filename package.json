@@ -1,6 +1,6 @@
 {
   "name": "droppy",
-  "version": "12.4.14",
+  "version": "12.4.15",
   "description": "Self-hosted file storage",
   "author": "silverwind <me@silverwind.io>",
   "repository": "silverwind/droppy",
@@ -30,7 +30,6 @@
     "lodash.throttle": "4.1.1",
     "mime-types": "2.1.27",
     "minimist": "^1.2.8",
-    "mv": "2.1.1",
     "nth-check": "^2.1.1",
     "original-url": "1.2.3",
     "plyr": "3.6.2",

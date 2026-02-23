@@ -8,7 +8,6 @@ const ext = require("file-extension");
 const fs = require("fs");
 const isbinaryfile = require("isbinaryfile");
 const mimeTypes = require("mime-types");
-const mv = require("mv");
 const path = require("path");
 const util = require("util");
 const validate = require("valid-filename");
@@ -43,8 +42,13 @@ utils.rmdir = function(p, cb) {
 };
 
 utils.move = function(src, dst, cb) {
-  mv(src, dst, err => {
-    if (cb) cb(err);
+  fs.rename(src, dst, err => {
+    if (!err) return cb && cb(null);
+    if (err.code !== "EXDEV") return cb && cb(err);
+    fs.cp(src, dst, {recursive: true, force: true}, cpErr => {
+      if (cpErr) return cb && cb(cpErr);
+      fs.rm(src, {recursive: true, force: true}, cb);
+    });
   });
 };
 
