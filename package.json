@@ -41,7 +41,7 @@
     "untildify": "4.0.0",
     "valid-filename": "3.1.0",
     "which": "2.0.2",
-    "ws": "^8.17.1",
+    "ws": "^8.21.0",
     "yazl": "2.5.1"
   },
   "devDependencies": {
@@ -90,5 +90,8 @@
   "browserslist": "defaults",
   "overrides": {
     "minimatch": "^10.2.2"
+  },
+  "resolutions": {
+    "picomatch": "^2.3.2"
   }
 }
