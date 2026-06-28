@@ -837,11 +837,23 @@ function handleGETandHEAD(req, res) {
     }
     log.info(req, res);
   } else if (/^\/!\/type\/[\s\S]+/.test(URI)) {
-    handleTypeRequest(req, res, utils.addFilesPath(URI.substring(7)));
+    const typePath = URI.substring(7);
+    if (!utils.isPathSane(typePath)) {
+      res.statusCode = 400;
+      res.end();
+      return log.info(req, res, `Invalid GET: ${req.url}`);
+    }
+    handleTypeRequest(req, res, utils.addFilesPath(typePath));
   } else if (/^\/!\/file\/[\s\S]+/.test(URI)) {
     handleFileRequest(req, res, false);
   } else if (/^\/!\/zip\/[\s\S]+/.test(URI)) {
-    const zipPath = utils.addFilesPath(URI.substring(6));
+    const zipUriPath = URI.substring(6);
+    if (!utils.isPathSane(zipUriPath)) {
+      res.statusCode = 400;
+      res.end();
+      return log.info(req, res, `Invalid GET: ${req.url}`);
+    }
+    const zipPath = utils.addFilesPath(zipUriPath);
     fs.stat(zipPath, (err, stats) => {
       if (!err && stats.isDirectory()) {
         streamArchive(req, res, zipPath, true, stats, false);
