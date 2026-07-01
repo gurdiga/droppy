@@ -8,7 +8,7 @@
   "preferGlobal": true,
   "bin": "./droppy.js",
   "engines": {
-    "node": ">= 12.10.0"
+    "node": ">= 18"
   },
   "scripts": {
     "start": "node droppy.js start",

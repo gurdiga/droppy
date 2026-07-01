@@ -12,7 +12,10 @@ lint:
 	yarn -s run eslint server client/client.js droppy.js
 	# yarn -s run stylelint client/*.css
 
-test: lint
+unit:
+	node --test
+
+test: lint unit
 
 build:
 	@touch client/client.js
@@ -67,7 +70,7 @@ patch: test build ver-patch docker publish
 minor: test build ver-minor docker publish
 major: test build ver-major docker publish
 
-.PHONY: dev run lint test publish docker deps update jquery version-patch version-minor version-major patch minor major
+.PHONY: dev run lint unit test publish docker deps update jquery version-patch version-minor version-major patch minor major
 
 start:
 	node droppy start --dev
