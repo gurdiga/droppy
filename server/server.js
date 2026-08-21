@@ -12,7 +12,6 @@ const Busboy = require("busboy");
 const {red, blue, green, cyan, magenta} = require("colorette");
 const escRe = require("escape-string-regexp");
 const etag = require("etag");
-const imgSize = require("image-size");
 const rrdir = require("rrdir");
 const sendFile = require("send");
 const ut = require("untildify");
@@ -649,7 +648,7 @@ function onWebSocketRequest(ws, req) {
           if (utils.extensionRe(exts.pdf).test(file)) {
             resolve({pdf: true, src: file});
           } else if (utils.extensionRe(exts.img).test(file)) {
-            imgSize(path.join(utils.addFilesPath(dir), file), (err, dims) => {
+            utils.imageDimensions(path.join(utils.addFilesPath(dir), file), (err, dims) => {
               if (err) log.error(err);
               resolve({
                 src: file,

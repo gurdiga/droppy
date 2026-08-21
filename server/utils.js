@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const escapeStringRegexp = require("escape-string-regexp");
 const ext = require("file-extension");
 const fs = require("fs");
+const imgSize = require("image-size");
 const isbinaryfile = require("isbinaryfile");
 const mimeTypes = require("mime-types");
 const path = require("path");
@@ -308,6 +309,30 @@ utils.readFile = function(p, cb) {
     }
   });
 };
+
+// image-size dispatches on magic bytes and ignores the file name, so a file
+// called photo.png can still reach its ICNS parser, whose entry walk loops
+// forever on a zero-length entry and wedges the whole event loop
+// (CVE-2025-71330, unpatched upstream). None of the extensions droppy shows is
+// ICNS, so refusing to probe those bytes costs nothing legitimate.
+utils.imageDimensions = function(p, cb) {
+  fs.open(p, "r", (err, fd) => {
+    if (err) return cb(err);
+    const magic = Buffer.alloc(4);
+    fs.read(fd, magic, 0, magic.length, 0, (err, bytesRead) => {
+      fs.close(fd, () => {});
+      if (err) return cb(err);
+      if (bytesRead === magic.length && isIcns(magic)) {
+        return cb(new Error(`Refusing to read dimensions of ICNS file: ${p}`));
+      }
+      imgSize(p, cb);
+    });
+  });
+};
+
+function isIcns(magic) {
+  return magic.toString("ascii") === "icns";
+}
 
 utils.arrify = function(val) {
   return Array.isArray(val) ? val : [val];

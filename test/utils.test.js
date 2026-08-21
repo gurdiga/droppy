@@ -1,8 +1,10 @@
 "use strict";
 
-require("./helpers.js"); // seeds paths before utils binds them
+const {tmpdir} = require("./helpers.js"); // seeds paths before utils binds them
 const {describe, test} = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("fs");
+const path = require("path");
 
 const utils = require("../server/utils.js");
 const realFiles = require("../server/paths.js").get().files;
@@ -203,4 +205,50 @@ describe("ip / port", () => {
     assert.equal(utils.port({headers: {"x-real-port": "8080"}}), "8080");
     assert.equal(utils.port({headers: {}, connection: {remotePort: 1234}}), 1234);
   });
+});
+
+// image-size 0.8.3 dispatches on magic bytes, so its ICNS parser is reachable
+// through any of droppy's image extensions — and that parser loops forever on
+// a zero-length entry (CVE-2025-71330, unpatched upstream). Note that a
+// regression hangs this suite instead of failing it: the loop is synchronous,
+// so node:test's own timeout timer never gets a turn.
+describe("imageDimensions", () => {
+  test("reads the dimensions of an image", async () => {
+    const p = path.join(tmpdir(), "real.png");
+    fs.writeFileSync(p, png(3, 7));
+    const dims = await dimensions(p);
+    assert.equal(dims.width, 3);
+    assert.equal(dims.height, 7);
+  });
+
+  test("refuses ICNS bytes whatever the file is named", async () => {
+    const p = path.join(tmpdir(), "photo.png");
+    fs.writeFileSync(p, icnsWithZeroLengthEntry());
+    await assert.rejects(dimensions(p), /ICNS/);
+  });
+
+  function dimensions(p) {
+    return new Promise((resolve, reject) => {
+      utils.imageDimensions(p, (err, dims) => (err ? reject(err) : resolve(dims)));
+    });
+  }
+
+  function png(width, height) {
+    const buf = Buffer.alloc(24);
+    buf.write("\x89PNG\r\n\x1a\n", 0, "binary");
+    buf.writeUInt32BE(13, 8); // IHDR chunk length
+    buf.write("IHDR", 12, "ascii");
+    buf.writeUInt32BE(width, 16);
+    buf.writeUInt32BE(height, 20);
+    return buf;
+  }
+
+  function icnsWithZeroLengthEntry() {
+    const buf = Buffer.alloc(64);
+    buf.write("icns", 0, "ascii");
+    buf.writeUInt32BE(buf.length, 4);
+    buf.write("ic08", 8, "ascii"); // entry type
+    buf.writeUInt32BE(0, 12);      // entry length — the payload
+    return buf;
+  }
 });
