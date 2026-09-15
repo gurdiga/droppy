@@ -1,4 +1,4 @@
-# os deps: node yarn git jq docker
+# os deps: node git jq docker
 
 JQUERY_FLAGS:=-ajax,-css,-deprecated,-effects,-event/alias,-event/focusin,-event/trigger,-wrap,-core/ready,-deferred,-exports/amd,-sizzle,-offset,-dimensions,-serialize,-queue,-callbacks,-event/support,-event/ajax,-attributes/prop,-attributes/val,-attributes/attr,-attributes/support,-manipulation/support,-manipulation/var/rcheckableType
 
@@ -9,8 +9,8 @@ run:
 	node droppy.js start
 
 lint:
-	yarn -s run eslint server client/client.js droppy.js
-	# yarn -s run stylelint client/*.css
+	npx eslint server client/client.js droppy.js
+	# npx stylelint client/*.css
 
 unit:
 	node --test
@@ -28,7 +28,7 @@ publish:
 
 docker:
 	@rm -rf node_modules
-	yarn -s --production --pure-lockfile
+	npm ci --omit=dev
 	$(eval IMAGE := silverwind/droppy)
 	$(eval VERSION := $(shell cat package.json | jq -r .version))
 	$(eval ARCHS := "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6")
@@ -39,32 +39,32 @@ docker:
 	docker buildx build --pull --push --platform $(ARCHS) -t $(IMAGE):$(VERSION) .
 	docker buildx build --pull --push --platform $(ARCHS) -t $(IMAGE):latest .
 	@docker buildx rm builder  &>/dev/null || true
-	yarn
+	npm install
 
 deps:
 	rm -rf node_modules
-	yarn
+	npm install
 
 update:
-	yarn -s run updates -u
+	npx updates -u
 	@$(MAKE) --no-print-directory deps
 	@touch client/client.js
 
 jquery:
 	rm -rf /tmp/jquery
 	git clone --depth 1 https://github.com/jquery/jquery /tmp/jquery
-	cd /tmp/jquery; yarn; yarn -s run grunt; yarn -s run grunt custom:$(JQUERY_FLAGS); yarn -s run grunt remove_map_comment
+	cd /tmp/jquery; npm install; npx grunt; npx grunt custom:$(JQUERY_FLAGS); npx grunt remove_map_comment
 	cat /tmp/jquery/dist/jquery.min.js | perl -pe 's|"3\..+?"|"3"|' > $(CURDIR)/client/jquery-custom.min.js
 	rm -rf /tmp/jquery
 
 ver-patch:
-	yarn -s run versions -C patch
+	npx versions -C patch
 
 ver-minor:
-	yarn -s run versions -C minor
+	npx versions -C minor
 
 ver-major:
-	yarn -s run versions -C major
+	npx versions -C major
 
 patch: test build ver-patch docker publish
 minor: test build ver-minor docker publish
