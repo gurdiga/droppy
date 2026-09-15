@@ -207,11 +207,12 @@ describe("ip / port", () => {
   });
 });
 
-// image-size 0.8.3 dispatches on magic bytes, so its ICNS parser is reachable
-// through any of droppy's image extensions — and that parser loops forever on
-// a zero-length entry (CVE-2025-71330, unpatched upstream). Note that a
-// regression hangs this suite instead of failing it: the loop is synchronous,
-// so node:test's own timeout timer never gets a turn.
+// image-size dispatches on magic bytes, so its ICNS parser is reachable through
+// any of droppy's image extensions. In 0.8.3 that parser looped forever on a
+// zero-length entry (CVE-2025-71330); 2.0.4 rejects it, and utils keeps its own
+// guard in front. Either rejection satisfies the assertion below. Should both
+// ever fail, this suite hangs rather than fails: the loop was synchronous, so
+// node:test's own timeout timer never got a turn.
 describe("imageDimensions", () => {
   test("reads the dimensions of an image", async () => {
     const p = path.join(tmpdir(), "real.png");

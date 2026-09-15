@@ -6,7 +6,9 @@ const crypto = require("crypto");
 const escapeStringRegexp = require("escape-string-regexp");
 const ext = require("file-extension");
 const fs = require("fs");
-const imgSize = require("image-size");
+// Resolves at runtime; the pinned eslint-plugin-import predates "exports" subpaths.
+// eslint-disable-next-line import/no-unresolved
+const {imageSizeFromFile} = require("image-size/fromFile");
 const isbinaryfile = require("isbinaryfile");
 const mimeTypes = require("mime-types");
 const path = require("path");
@@ -311,10 +313,10 @@ utils.readFile = function(p, cb) {
 };
 
 // image-size dispatches on magic bytes and ignores the file name, so a file
-// called photo.png can still reach its ICNS parser, whose entry walk loops
-// forever on a zero-length entry and wedges the whole event loop
-// (CVE-2025-71330, unpatched upstream). None of the extensions droppy shows is
-// ICNS, so refusing to probe those bytes costs nothing legitimate.
+// called photo.png can still reach its ICNS parser, which looped forever on a
+// zero-length entry (CVE-2025-71330). 2.0.4 rejects those bytes itself, so this
+// guard is belt-and-braces and should never fire; it stays because this is the
+// only place an uploaded file reaches a third-party parser.
 utils.imageDimensions = function(p, cb) {
   fs.open(p, "r", (err, fd) => {
     if (err) return cb(err);
@@ -325,7 +327,7 @@ utils.imageDimensions = function(p, cb) {
       if (bytesRead === magic.length && isIcns(magic)) {
         return cb(new Error(`Refusing to read dimensions of ICNS file: ${p}`));
       }
-      imgSize(p, cb);
+      imageSizeFromFile(p).then((dims) => cb(null, dims), cb);
     });
   });
 };

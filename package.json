@@ -23,7 +23,7 @@
     "escape-string-regexp": "4.0.0",
     "etag": "1.8.1",
     "file-extension": "4.0.5",
-    "image-size": "0.8.3",
+    "image-size": "2.0.4",
     "isbinaryfile": "4.0.6",
     "json-buffer": "3.0.1",
     "lodash.debounce": "4.0.8",
